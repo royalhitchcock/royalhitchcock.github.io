@@ -1,1 +1,0 @@
-# royalhitchcock.github.io
