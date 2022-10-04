@@ -1,6 +1,8 @@
 import * as esbuild from 'esbuild-wasm';
+import { createRoot } from 'react-dom/client';
 import { useEffect, useRef, useState } from "react";
-import ReactDOM from "react-dom";
+import React from "react";
+import { unpkgPathPlugin } from './plugins/unpkg-path-plugin';
 
 const App = () => {
     const ref = useRef<any>();
@@ -22,12 +24,14 @@ const App = () => {
             return;
         }
 
-        const result = await ref.current.transform(input, {
-            loader: 'jsx',
-            target: 'es2015',            
+        const result = await ref.current.build({
+            entryPoints: ['index.js'],
+            bundle: true,
+            write: false,
+            plugins: [unpkgPathPlugin()],
         });
     
-        setCode(result.code);
+        setCode(result.outputFiles[0].text);
     };
 
     return (
@@ -41,6 +45,8 @@ const App = () => {
     );
 };
 
-ReactDOM.render(
-    <App />, document.querySelector('#root')
-);
+var container: Element | null = document.getElementById('root');
+if(container) {
+    var root = createRoot(container);
+    root.render(<App />);
+}  
